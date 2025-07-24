@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Sharing Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="loginRequired" class="login-required">
+        <div class="login-prompt">
+            <h2>🔒 Login Required</h2>
+            <p>You must be logged in to access the notes platform.</p>
+            <a href="login.html" class="btn btn-primary">Login Now</a>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <header>
+            <div class="container">
+                <h1>📝 Notes Hub</h1>
+                <nav>
+                    <span id="userWelcome"></span>
+                    <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+                    <button onclick="logout()" class="btn btn-danger">Logout</button>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <div class="container">
+                <div class="hero">
+                    <h2>Share and Discover Amazing Notes</h2>
+                    <p>A platform for students and professionals to share, view, and download educational notes with file attachments</p>
+                </div>
+
+                <div class="search-section">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Search notes...">
+                        <button onclick="searchNotes()" class="btn btn-primary">Search</button>
+                    </div>
+                    
+                    <div class="filters">
+                        <select id="categoryFilter">
+                            <option value="">Semester</option>
+                            <option value="Mathematics">1</option>
+                            <option value="Science">2</option>
+                            <option value="History">3</option>
+                            <option value="Literature">4</option>
+                            <option value="Technology">5</option>
+                            <option value="Business">6</option>
+                            <option value="Engineering">7</option>
+                            <option value="Engineering">8</option>
+                        </select>
+                        
+                        <input type="text" id="tagsFilter" placeholder="Tags (comma separated)">
+                    </div>
+                </div>
+
+                <div class="notes-grid" id="notesGrid">
+                    <!-- Notes will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Note Modal -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="noteContent">
+                <!-- Note details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/notes.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Notes Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📝 Notes Hub - Dashboard</h1>
+            <nav>
+                <span id="userWelcome"></span>
+                <a href="index.html" class="btn btn-secondary">Browse Notes</a>
+                <button onclick="logout()" class="btn btn-danger">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" onclick="showTab('create')">Create Note</button>
+                <button class="tab-btn" onclick="showTab('my-notes')">My Notes</button>
+                <button class="tab-btn" onclick="showTab('my-files')">My Files</button>
+            </div>
+
+            <!-- Create Note Tab -->
+            <div id="createTab" class="tab-content active">
+                <div class="create-note-form">
+                    <h3>Create New Note</h3>
+                    <form id="noteForm">
+                        <div class="form-group">
+                            <label for="noteTitle">Title:</label>
+                            <input type="text" id="noteTitle" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="noteCategory">Semester:</label>
+                            <select id="noteCategory">
+                                <option value="">Select Semester</option>
+                                <option value="Mathematics">1</option>
+                                <option value="Science">2</option>
+                                <option value="History">3</option>
+                                <option value="Literature">4</option>
+                                <option value="Technology">5</option>
+                                <option value="Business">6</option>
+                                <option value="Engineering">7</option>
+                                <option value="Engineering">8</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="noteTags">Tags (comma separated):</label>
+                            <input type="text" id="noteTags" placeholder="algebra, equations, math">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="noteContent">Content:</label>
+                            <textarea id="noteContent" rows="10" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="fileUpload">Attach Files (PDF, Images, Documents):</label>
+                            <input type="file" id="fileUpload" multiple accept=".pdf,.jpg,.jpeg,.png,.gif,.txt,.doc,.docx">
+                            <div id="uploadProgress" class="upload-progress"></div>
+                            <div id="uploadedFiles" class="uploaded-files"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="isPublic" checked>
+                                Make this note public
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Create Note</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Notes Tab -->
+            <div id="myNotesTab" class="tab-content">
+                <h3>My Notes</h3>
+                <div class="notes-grid" id="myNotesGrid">
+                    <!-- User's notes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- My Files Tab -->
+            <div id="myFilesTab" class="tab-content">
+                <h3>My Files</h3>
+                <div class="files-grid" id="myFilesGrid">
+                    <!-- User's files will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Note Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Edit Note</h3>
+            <form id="editNoteForm">
+                <input type="hidden" id="editNoteId">
+                <div class="form-group">
+                    <label for="editTitle">Title:</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="noteCategory">Semester:</label>
+                            <select id="noteCategory">
+                                <option value="">Select Semester</option>
+                                <option value="Mathematics">1</option>
+                                <option value="Science">2</option>
+                                <option value="History">3</option>
+                                <option value="Literature">4</option>
+                                <option value="Technology">5</option>
+                                <option value="Business">6</option>
+                                <option value="Engineering">7</option>
+                                <option value="Engineering">8</option>
+                            </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editTags">Tags (comma separated):</label>
+                    <input type="text" id="editTags">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editContent">Content:</label>
+                    <textarea id="editContent" rows="10" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editFileUpload">Add More Files:</label>
+                    <input type="file" id="editFileUpload" multiple accept=".pdf,.jpg,.jpeg,.png,.gif,.txt,.doc,.docx">
+                    <div id="editUploadProgress" class="upload-progress"></div>
+                    <div id="editUploadedFiles" class="uploaded-files"></div>
+                    <div id="existingFiles" class="existing-files">
+                        <h4>Existing Files:</h4>
+                        <div id="existingFilesList"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="editIsPublic">
+                        Make this note public
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Update Note</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

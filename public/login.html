@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Notes Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-form">
+            <h2>Login to Notes Hub</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+            </form>
+            
+            <div class="auth-switch">
+                <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
+            </div>
+        </div>
+
+        <div class="auth-form" id="registerForm" style="display: none;">
+            <h2>Register for Notes Hub</h2>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="regUsername">Username:</label>
+                    <input type="text" id="regUsername" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">Password:</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">Register</button>
+            </form>
+            
+            <div class="auth-switch">
+                <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>
