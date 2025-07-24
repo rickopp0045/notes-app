@@ -1,55 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>View Note</title>
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Details</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1 id="noteTitle">Loading...</h1>
-    <div id="noteDetails"></div>
-    <div id="noteContent"></div>
-    <div id="attachments"></div>
-    <a href="dashboard.html">⬅ Back to Dashboard</a>
-  </div>
+    <div class="container">
+        <h1>Note Details</h1>
+        <div id="noteDetails" style="margin-top: 20px;"></div>
+        <button onclick="goBack()">⬅ Back to Notes</button>
+    </div>
 
-  <script>
-    const token = localStorage.getItem('token');
-    const params = new URLSearchParams(window.location.search);
-    const noteId = params.get("id");
+    <script>
+        document.addEventListener('DOMContentLoaded', loadNote);
 
-    if (!token) {
-      alert("Please log in to view this note.");
-      window.location.href = "login.html";
-    } else if (!noteId) {
-      document.getElementById("noteTitle").textContent = "Note not found.";
-    } else {
-      fetch(`/api/notes/${noteId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
+        async function loadNote() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first!');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Get note ID from query string
+            const params = new URLSearchParams(window.location.search);
+            const noteId = params.get('id');
+
+            if (!noteId) {
+                document.getElementById('noteDetails').innerHTML = '<p>Note ID is missing!</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/notes/${noteId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    document.getElementById('noteDetails').innerHTML = '<p>Failed to load note details.</p>';
+                    return;
+                }
+
+                const note = await response.json();
+
+                document.getElementById('noteDetails').innerHTML = `
+                    <h2>${note.title}</h2>
+                    <p><strong>Author:</strong> ${note.authorName}</p>
+                    <p><strong>Date:</strong> ${new Date(note.createdAt).toLocaleDateString()}</p>
+                    <p><strong>Category:</strong> ${note.category || 'N/A'}</p>
+                    <p><strong>Tags:</strong> ${note.tags.join(', ')}</p>
+                    <p><strong>Content:</strong><br>${note.content.replace(/\n/g, '<br>')}</p>
+                    ${note.files && note.files.length > 0 ? `
+                        <h4>📎 Attached Files:</h4>
+                        ${note.files.map(file => `
+                            <p><a href="/api/files/${file._id}/download" target="_blank">${file.originalName}</a></p>
+                        `).join('')}
+                    ` : ''}
+                `;
+            } catch (error) {
+                document.getElementById('noteDetails').innerHTML = '<p>Error loading note.</p>';
+            }
         }
-      })
-      .then(res => res.json())
-      .then(note => {
-        document.getElementById("noteTitle").textContent = note.title;
-        document.getElementById("noteDetails").textContent =
-          `By ${note.authorName} • ${new Date(note.createdAt).toLocaleDateString()} • ${note.category || 'Uncategorized'}`;
-        document.getElementById("noteContent").innerHTML =
-          note.content.replace(/\n/g, '<br>');
 
-        if (note.files && note.files.length > 0) {
-          document.getElementById("attachments").innerHTML = `
-            <h3>Attachments:</h3>
-            ${note.files.map(file => `<a href="/api/files/${file._id}/download" target="_blank">${file.originalName}</a>`).join('<br>')}
-          `;
+        function goBack() {
+            window.location.href = '/index.html';
         }
-      })
-      .catch(() => {
-        document.getElementById("noteTitle").textContent = "Error loading note.";
-      });
-    }
-  </script>
+    </script>
 </body>
 </html>

@@ -94,7 +94,7 @@ function displayNotes(notes) {
 
 function openNote(noteId) {
     // Redirect to notes.html with query parameter
-    window.location.href = `notes.html?id=${noteId}`;
+    window.location.href = `/notes.html?id=${noteId}`;
 }
 
 async function downloadFile(fileId, filename) {
