@@ -17,7 +17,6 @@
         document.addEventListener('DOMContentLoaded', loadNote);
 
         async function loadNote() {
-            // Get token to check if logged in (optional)
             const token = localStorage.getItem('token');
             if (!token) {
                 alert('Please login first!');
@@ -25,7 +24,6 @@
                 return;
             }
 
-            // Get note ID from query string
             const params = new URLSearchParams(window.location.search);
             const noteId = params.get('id');
 
@@ -35,7 +33,6 @@
             }
 
             try {
-                // Fetch note details
                 const response = await fetch(`/api/notes/${noteId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -47,7 +44,6 @@
 
                 const note = await response.json();
 
-                // Build HTML for note details
                 document.getElementById('noteDetails').innerHTML = `
                     <h2>${note.title}</h2>
                     <p><strong>Author:</strong> ${note.authorName}</p>
@@ -55,20 +51,39 @@
                     <p><strong>Category:</strong> ${note.category || 'N/A'}</p>
                     <p><strong>Tags:</strong> ${note.tags.join(', ')}</p>
                     <p><strong>Content:</strong><br>${note.content.replace(/\n/g, '<br>')}</p>
-
                     ${note.files && note.files.length > 0 ? `
                         <h4>📎 Attached Files:</h4>
                         ${note.files.map(file => `
-                            <p>
-                                <a href="/api/files/${file._id}/download" target="_blank" style="color: blue; text-decoration: underline;">
-                                    ${file.originalName} ⬇
-                                </a>
-                            </p>
+                            <p><button onclick="downloadFile('${file._id}', '${file.originalName}')">📥 ${file.originalName}</button></p>
                         `).join('')}
-                    ` : '<p>No attached files.</p>'}
+                    ` : ''}
                 `;
             } catch (error) {
                 document.getElementById('noteDetails').innerHTML = '<p>Error loading note.</p>';
+            }
+        }
+
+        async function downloadFile(fileId, filename) {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`/api/files/${fileId}/download`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    alert('Download failed. Please login again.');
+                    return;
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('Error downloading file.');
             }
         }
 
