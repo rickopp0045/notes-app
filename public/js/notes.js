@@ -17,7 +17,6 @@ function checkAuthentication() {
     document.getElementById('loginRequired').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
     
-    // Display user welcome message
     const userWelcome = document.getElementById('userWelcome');
     if (userWelcome) {
         userWelcome.textContent = `Welcome, ${user.username}!`;
@@ -93,75 +92,9 @@ function displayNotes(notes) {
     `).join('');
 }
 
-async function openNote(noteId) {
-    const token = localStorage.getItem('token');
-    
-    try {
-        const response = await fetch(`/api/notes/${noteId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        if (response.status === 401) {
-            logout();
-            return;
-        }
-        
-        const note = await response.json();
-        
-        if (response.ok) {
-            displayNoteModal(note);
-        } else {
-            showMessage('Failed to load note', 'error');
-        }
-    } catch (error) {
-        showMessage('Network error. Please try again.', 'error');
-    }
-}
-
-function displayNoteModal(note) {
-    const noteContent = document.getElementById('noteContent');
-    noteContent.innerHTML = `
-        <h2>${note.title}</h2>
-        <div class="note-meta">
-            By ${note.authorName} • ${formatDate(note.createdAt)} • ${note.category || 'Uncategorized'}
-        </div>
-        ${note.tags.length > 0 ? `
-            <div class="note-tags">
-                ${note.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-            </div>
-        ` : ''}
-        <div class="note-content" style="margin: 2rem 0; line-height: 1.6;">
-            ${note.content.replace(/\n/g, '<br>')}
-        </div>
-        ${note.files && note.files.length > 0 ? `
-            <div class="note-files">
-                <h4>📎 Attached Files:</h4>
-                <div class="note-file-list">
-                    ${note.files.map(file => `
-                        <div class="note-file-item" onclick="downloadFile('${file._id}', '${file.originalName}')">
-                            <span class="note-file-icon">${getFileIcon(file.mimetype)}</span>
-                            <span class="note-file-name">${file.originalName}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        ` : ''}
-        <div class="note-actions">
-            <button onclick="downloadNote('${note._id}', '${note.title}')" class="btn btn-primary">Download Note</button>
-            <button onclick="rateNote('${note._id}')" class="btn btn-secondary">Rate Note</button>
-        </div>
-        <div class="note-stats" style="margin-top: 1rem;">
-            <span>📥 ${note.downloadCount} downloads</span>
-            <div class="rating">
-                <span class="stars">${'★'.repeat(Math.round(note.rating))}</span>
-                <span>(${note.ratingCount} ratings)</span>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('noteModal').style.display = 'block';
+function openNote(noteId) {
+    // Redirect to notes.html with query parameter
+    window.location.href = `notes.html?id=${noteId}`;
 }
 
 async function downloadFile(fileId, filename) {
@@ -196,7 +129,6 @@ async function downloadNote(noteId, title) {
     const token = localStorage.getItem('token');
     
     try {
-        // Increment download count
         await fetch(`/api/notes/${noteId}/download`, {
             method: 'POST',
             headers: {
@@ -204,7 +136,6 @@ async function downloadNote(noteId, title) {
             }
         });
         
-        // Get note content for download
         const response = await fetch(`/api/notes/${noteId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -214,10 +145,8 @@ async function downloadNote(noteId, title) {
         const note = await response.json();
         
         if (response.ok) {
-            // Create downloadable content
             const content = `Title: ${note.title}\nAuthor: ${note.authorName}\nDate: ${formatDate(note.createdAt)}\nCategory: ${note.category || 'Uncategorized'}\nTags: ${note.tags.join(', ')}\n\n${note.content}\n\nAttached Files: ${note.files.length} file(s)`;
             
-            // Create and trigger download
             const blob = new Blob([content], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -227,8 +156,6 @@ async function downloadNote(noteId, title) {
             window.URL.revokeObjectURL(url);
             
             showMessage('Note downloaded successfully!', 'success');
-            
-            // Reload notes to update download count
             loadNotes();
         }
     } catch (error) {
@@ -263,7 +190,6 @@ async function rateNote(noteId) {
         
         if (response.ok) {
             showMessage('Rating submitted successfully!', 'success');
-            // Refresh the note display
             openNote(noteId);
             loadNotes();
         } else {
@@ -303,7 +229,6 @@ function logout() {
 }
 
 function setupModal() {
-    // Close modal when clicking the X
     const closeBtn = document.querySelector('.close');
     if (closeBtn) {
         closeBtn.onclick = function() {
@@ -311,14 +236,12 @@ function setupModal() {
         }
     }
     
-    // Close modal when clicking outside
     window.onclick = function(event) {
         if (event.target.id === 'noteModal') {
             event.target.style.display = 'none';
         }
     }
     
-    // Search on Enter key
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('keypress', function(e) {
@@ -329,7 +252,6 @@ function setupModal() {
     }
 }
 
-// Utility functions
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString();
@@ -341,7 +263,6 @@ function truncateText(text, maxLength) {
 }
 
 function showMessage(message, type) {
-    // Remove existing messages
     const existingMessages = document.querySelectorAll('.message');
     existingMessages.forEach(msg => msg.remove());
     
