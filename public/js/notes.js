@@ -97,6 +97,7 @@ function openNote(noteId) {
 }
 
 
+
 async function downloadFile(fileId, filename) {
     const token = localStorage.getItem('token');
     
