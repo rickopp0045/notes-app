@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>View Note</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1 id="noteTitle">Loading...</h1>
+    <div id="noteDetails"></div>
+    <div id="noteContent"></div>
+    <div id="attachments"></div>
+    <a href="dashboard.html">⬅ Back to Dashboard</a>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const params = new URLSearchParams(window.location.search);
+    const noteId = params.get("id");
+
+    if (!token) {
+      alert("Please log in to view this note.");
+      window.location.href = "login.html";
+    } else if (!noteId) {
+      document.getElementById("noteTitle").textContent = "Note not found.";
+    } else {
+      fetch(`/api/notes/${noteId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(note => {
+        document.getElementById("noteTitle").textContent = note.title;
+        document.getElementById("noteDetails").textContent =
+          `By ${note.authorName} • ${new Date(note.createdAt).toLocaleDateString()} • ${note.category || 'Uncategorized'}`;
+        document.getElementById("noteContent").innerHTML =
+          note.content.replace(/\n/g, '<br>');
+
+        if (note.files && note.files.length > 0) {
+          document.getElementById("attachments").innerHTML = `
+            <h3>Attachments:</h3>
+            ${note.files.map(file => `<a href="/api/files/${file._id}/download" target="_blank">${file.originalName}</a>`).join('<br>')}
+          `;
+        }
+      })
+      .catch(() => {
+        document.getElementById("noteTitle").textContent = "Error loading note.";
+      });
+    }
+  </script>
+</body>
+</html>
